@@ -13,3 +13,7 @@ def load_data(nrows):
     lowrcase = lamba x: str(x).lower()
     data.rename(lowrcase, axis='columns', inplace= True)
     data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
+    
+data_load_state = st.text("Data Loading...")
+data=load_data(10000)
+data_load_state.text("Done!")
