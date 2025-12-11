@@ -20,7 +20,7 @@ data_load_state = st.text('Loading data...')
 data = load_data(100000)
 data_load_state.text('Done!')
 
-if st.checknox("Show Raw Data"):
+if st.checkbox("Show Raw Data"):
     st.subheader("Raw Data")
     st.write(data)
 
