@@ -23,7 +23,7 @@ with col2:
 filtered = df[(df.country == country) & (df.year <= year)]
 
 summary = (
-    filtered.groupby("year")["yaxis_ratio"]
+    filtered.groupby("year")["country"]
     .mean()
     .reset_index(name="Domestic Supply")
 )
