@@ -1,35 +1,38 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import panel as pn
-pn.extension('tabulator')
-import hvplot.pandas
-idf = df.interactive()
+import altair as alt
 
-df = pd.read_csv("ireland_energy.csv")
+st.set_page_config(page_title="Energy Dashboard", layout="wide")
 
-st.title("Ireland Energy")
+@st.cache_data
+def load_data():
+    return pd.read_csv("data.csv")
 
-year_slider = pn.widgets.IntSlider(name='Year slider', start=2000, end=2023, step=5, value=2023)
-year_slider
+df = load_data()
 
-# Radio buttons for ratios
-yaxis_ratio = pn.widgets.RadioButtonGroup(
-    name='Y axis', 
-    options=['import_dependency', 'domestic_supply',],
-    button_type='success'
+st.title("Energy Domestic Supply")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    country = st.selectbox("Country", sorted(df.country.unique()))
+
+with col2:
+    year = st.slider("Year", int(df.year.min()), int(df.year.max()), 2023)
+
+filtered = df[(df.country == country) & (df.year <= year)]
+
+summary = (
+    filtered.groupby("year")["yaxis_ratio"]
+    .mean()
+    .reset_index(name="Domestic Supply")
 )
-yaxis_ratio
 
-energy_pipeline = (
-    idf[
-        (idf.year <= year_slider)&
-        (idf.country.isin(["Ireland", "Uruguay"]))
-    ]
-    .groupby(['country', 'year'])[yaxis_ratio].mean()
-    .to_frame()
-    .reset_index()
-    .sort_values(by='year')  
-    .reset_index(drop=True)
+chart = alt.Chart(summary).mark_line(point=True).encode(
+    x="year:O",
+    y="Domestic Supply:Q",
+    tooltip=["year","Domestic Supply"]
 )
-energy_pipeline
+
+st.altair_chart(chart, use_container_width=True)
+st.dataframe(summary, use_container_width=True)
