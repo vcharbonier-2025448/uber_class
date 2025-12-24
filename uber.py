@@ -27,7 +27,7 @@ METRICS = {
     "Import Dependency": "import_dependency",
     "% Renewable Production": "renew_prod_%"
 }
-metric_label = st.selectbox("Select metric", list(METRICS)))
+metric_label = st.selectbox("Select metric", list(METRICS))
 metric_col = METRICS[metric_label]
 
 summary = (
