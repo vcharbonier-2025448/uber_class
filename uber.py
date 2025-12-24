@@ -22,11 +22,6 @@ with col2:
 
 filtered = df[(df.country == country) & (df.year <= year)]
 
-summary = (
-    filtered.groupby("year")["country"]
-    .mean()
-    .reset_index(name="Domestic Supply")
-)
 
 chart = alt.Chart(summary).mark_line(point=True).encode(
     x="year:O",
@@ -35,4 +30,3 @@ chart = alt.Chart(summary).mark_line(point=True).encode(
 )
 
 st.altair_chart(chart, use_container_width=True)
-st.dataframe(summary, use_container_width=True)
