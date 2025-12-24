@@ -31,9 +31,9 @@ metric_label = st.selectbox("Select metric", list(METRICS.keys()))
 metric_col = METRICS[metric_label]
 
 summary = (
-    filtered.groupby("year")["metric_col"]
+    filtered.groupby("year")[metric_col]
     .mean()
-    .reset_index(name="metric_col")
+    .reset_index(name=metric_col)
 )
 
 chart = alt.Chart(summary).mark_line(point=True).encode(
