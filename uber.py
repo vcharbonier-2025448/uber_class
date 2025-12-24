@@ -27,7 +27,7 @@ METRICS = {
     "Import Dependency": "import_dependency",
     "% Renewable Production": "renew_prod_%"
 }
-metric_label = st.selectbox("Select metric", list(METRICS))
+metric_label = st.selectbox("Select metric", list(METRICS.keys()))
 metric_col = METRICS[metric_label]
 
 summary = (
@@ -38,8 +38,8 @@ summary = (
 
 chart = alt.Chart(summary).mark_line(point=True).encode(
     x="year:O",
-    y="Domestic Supply:Q",
-    tooltip=["year","Domestic Supply"]
+     y=alt.Y(f"{metric_label}:Q", title=metric_label),
+    tooltip=["year", metric_label]
 )
 
 st.altair_chart(chart, use_container_width=True)
