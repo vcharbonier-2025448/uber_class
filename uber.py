@@ -63,6 +63,6 @@ a, b = st.columns(2)
 c, d = st.columns(2)
 
 slots = [a, b, c, d]
-for (label, col), slot in zip(KPI_COLS.items(), slots):
+for (label, col), slot in zip(METRICS.items(), slots):
     val = get_value(col)
     slot.metric(label, fmt(label, val), delta=None, border=True)
