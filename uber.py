@@ -32,22 +32,42 @@ metric_col = METRICS[metric_label]
 
 row = df[(df["country"] == country) & (df["year"] == year)]
 
-def get_value(col):summary = (
-    if col not in row.columns or row.empty:    filtered.groupby("year")[metric_col]
-        return np.nan    .mean()
-    return row[col].mean()    .reset_index(name=metric_col)
-)
-def fmt(label, val):
-    if pd.isna(val):chart = alt.Chart(summary).mark_line(point=True).encode(
-        return "N/A"    x="year:O",
-    if "%" in label:    y=alt.Y(f"{metric_col}:Q", title=metric_col),
-        return f"{val:.1f}%"    tooltip=["year", metric_col]
-    return f"{val:,.3f}")
+def get_value(col):
+    if col not in row.columns or row.empty:
+        return np.nan
+    return row[col].mean()
 
-a, b = st.columns(2)st.altair_chart(chart, use_container_width=True)
-c, d = st.columns(2)st.dataframe(summary, use_container_width=True)
+def fmt(label, val):
+    if pd.isna(val):
+        return "N/A"
+    if "%" in label:
+        return f"{val:.1f}%"
+    return f"{val:,.3f}"
+
+a, b = st.columns(2)
+c, d = st.columns(2)
 
 slots = [a, b, c, d]
 for (label, col), slot in zip(METRICS.items(), slots):
     val = get_value(col)
     slot.metric(label, fmt(label, val), delta=None, border=True)
+
+summary = (
+    filtered.groupby("year")[metric_col]
+    .mean()
+    .reset_index(name=metric_col)
+)
+
+chart = alt.Chart(summary).mark_line(point=True).encode(
+    x="year:O",
+    y=alt.Y(f"{metric_col}:Q", title=metric_col),
+    tooltip=["year", metric_col]
+)
+
+st.altair_chart(chart, use_container_width=True)
+st.dataframe(summary, use_container_width=True)
+
+
+
+
+
