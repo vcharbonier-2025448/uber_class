@@ -44,3 +44,25 @@ chart = alt.Chart(summary).mark_line(point=True).encode(
 
 st.altair_chart(chart, use_container_width=True)
 st.dataframe(summary, use_container_width=True)
+
+row = df[(df["country"] == country) & (df["year"] == year)]
+
+    def get_value(col):
+        if col not in row.columns or row.empty:
+            return np.nan
+        return row[col].mean()
+
+    def fmt(label, val):
+        if pd.isna(val):
+            return "N/A"
+        if "%" in label:
+            return f"{val:.1f}%"
+        return f"{val:,.3f}"
+
+    a, b = st.columns(2)
+    c, d = st.columns(2)
+
+    slots = [a, b, c, d]
+    for (label, col), slot in zip(KPI_COLS.items(), slots):
+        val = get_value(col)
+        slot.metric(label, fmt(label, val), delta=None, border=True)
