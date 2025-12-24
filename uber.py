@@ -38,7 +38,7 @@ summary = (
 
 chart = alt.Chart(summary).mark_line(point=True).encode(
     x="year:O",
-     y=alt.Y(f"{metric_label}:Q", title=metric_label),
+    y=alt.Y(f"{metric_label}:Q", title=metric_label),
     tooltip=["year", metric_label]
 )
 
