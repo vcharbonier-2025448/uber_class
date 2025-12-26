@@ -83,7 +83,24 @@ with col1: st.plotly_chart(fig, use_container_width=True)
 
 with col2: st.dataframe(summary, use_container_width=True)
 
+import plotly.express as px
 
+st.subheader("Energy Dependency vs Renewable Production")
+
+scatter_df = pd.concat([
+    df_ie.assign(country="Ireland"),
+    df_uy.assign(country="Uruguay")
+], ignore_index=True)
+
+fig = px.scatter(
+    scatter_df,
+    x="import_dependency",
+    y="renew_prod_%",
+    color="country",
+    labels={"renew_prod_%": "Renewable Share"}
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 
 
