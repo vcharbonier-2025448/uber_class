@@ -81,6 +81,22 @@ chart = alt.Chart(summary).mark_line(point=True).encode(
 )
 
 st.altair_chart(chart, use_container_width=True)
+
+st.subheader("Energy Dependency vs Renewable Production")
+
+scatter_df = pd.concat([
+    df_ie.assign(country="Ireland"),
+    df_uy.assign(country="Uruguay")
+])
+
+fig = px.scatter(scatter_df,
+    x="import_dependency",
+    y="renew_prod_%",
+    color="country",
+    labels={"renew_prod_%":"Renewable Share"}
+)
+st.plotly_chart(fig, use_container_width=True)
+
 st.dataframe(summary, use_container_width=True)
 
 
