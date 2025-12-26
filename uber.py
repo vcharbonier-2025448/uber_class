@@ -1,14 +1,30 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
+import numpy as np
 
 st.set_page_config(page_title="Energy Dashboard", layout="wide")
 
-@st.cache_data
 def load_data():
-    return pd.read_csv("ireland_energy.csv")
+    return pd.read_csv("energy.csv")
 
 df = load_data()
+
+df_ie =  pd.read_csv("ireland_energy.csv")
+df_uy =  pd.read_csv("uruguay_energy.csv")
+
+st.subheader("Quick comparison (latest year)")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric("Ireland Import Dependency", round(df_ie["import_dependency"].iloc[-1],2))
+    st.metric("Ireland Renewable Share", round(df_ie["renew_prod_%"].iloc[-1]*100,1))
+
+with col2:
+    st.metric("Uruguay Import Dependency", round(df_uy["import_dependency"].iloc[-1],2))
+    st.metric("Uruguay Renewable Share", round(df_uy["renew_prod_%"].iloc[-1]*100,1))
+    
 
 st.title("Energy Domestic Supply")
 
