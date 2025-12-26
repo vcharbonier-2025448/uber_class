@@ -89,7 +89,7 @@ scatter_df = pd.concat([
     df_uy.assign(country="Uruguay")
 ])
 
-fig = px.scatter(scatter_df,
+fig = plt.scatter(scatter_df,
     x="import_dependency",
     y="renew_prod_%",
     color="country",
