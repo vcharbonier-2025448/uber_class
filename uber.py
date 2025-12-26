@@ -27,6 +27,7 @@ with col2:
     
 
 st.title("Energy Domestic Supply")
+st.info("Uruguay shows consistently lower import dependency and higher renewable production, indicating a more advanced stage of energy transition compared to Ireland.")
 
 col1, col2 = st.columns(2)
 
