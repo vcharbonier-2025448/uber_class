@@ -14,60 +14,47 @@ df_ie =  pd.read_csv("ireland_energy.csv")
 df_uy =  pd.read_csv("uruguay_energy.csv")
 
 st.subheader("Quick comparison (latest year)")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.metric("Ireland Import Dependency", round(df_ie["import_dependency"].iloc[-1],2))
-    st.metric("Ireland Renewable Share", round(df_ie["renew_prod_%"].iloc[-1]*100,1))
-
-with col2:
-    st.metric("Uruguay Import Dependency", round(df_uy["import_dependency"].iloc[-1],2))
-    st.metric("Uruguay Renewable Share", round(df_uy["renew_prod_%"].iloc[-1]*100,1))
     
 
 st.title("Energy Domestic Supply")
 st.info("Uruguay shows consistently lower import dependency and higher renewable production, indicating a more advanced stage of energy transition compared to Ireland.")
 
-col1, col2 = st.columns(2)
+# --- Controls (left) + KPI cards (right) ---
+left, right = st.columns([2, 3])
 
-with col1:
-    country = st.selectbox("Country", sorted(df.country.unique()))
+with left:
+    country = st.selectbox("Country", sorted(df["country"].unique()))
 
-with col2:
-    year = st.slider("Year", int(df.year.min()), int(df.year.max()), 2023)
+    metric_label = st.selectbox("Select metric", list(METRICS.keys()))
+    metric_col = METRICS[metric_label]
 
-filtered = df[(df.country == country) & (df.year <= year)]
+    year = st.slider("Year", int(df["year"].min()), int(df["year"].max()), int(df["year"].max()))
 
-METRICS = {
-    "Domestic Supply": "domestic_supply",
-    "Import Dependency": "import_dependency",
-    "% Renewable Production": "renew_prod_%"
-}
-metric_label = st.selectbox("Select metric", list(METRICS.keys()))
-metric_col = METRICS[metric_label]
-
+# Filter after controls
+filtered = df[(df["country"] == country) & (df["year"] <= year)]
 row = df[(df["country"] == country) & (df["year"] == year)]
 
 def get_value(col):
-    if col not in row.columns or row.empty:
+    if row.empty or col not in row.columns:
         return np.nan
-    return row[col].mean()
+    return float(row[col].mean())
 
 def fmt(label, val):
     if pd.isna(val):
         return "N/A"
     if "%" in label:
-        return f"{val:.1f}%"
-    return f"{val:,.3f}"
+        return f"{val*100:.1f}%"
+    return f"{val:.3f}"
 
-a, b = st.columns(2)
-c, d = st.columns(2)
+# --- KPI cards (2x2) on the right ---
+with right:
+    r1c1, r1c2 = st.columns(2)
+    r2c1, r2c2 = st.columns(2)
 
-slots = [a, b, c, d]
-for (label, col), slot in zip(METRICS.items(), slots):
-    val = get_value(col)
-    slot.metric(label, fmt(label, val), delta=None, border=True)
+    r1c1.metric("Import Dependency", fmt("Import Dependency", get_value("import_dependency")))
+    r1c2.metric("Domestic Supply", fmt("Domestic Supply", get_value("domestic_supply")))
+    r2c1.metric("% Renewable Production", fmt("% Renewable Production", get_value("renew_prod_%")))
+    r2c2.metric("% Non-Renewable Production", fmt("% Non-Renewable Production", get_value("no_renew_prod_%")))
 
 summary = (
     filtered.groupby("year")[metric_col]
@@ -90,15 +77,11 @@ scatter_df = pd.concat([
     df_uy.assign(country="Uruguay")
 ])
 
-fig = plt.scatter(scatter_df,
-    x="import_dependency",
-    y="renew_prod_%",
-    color="country",
-    labels={"renew_prod_%":"Renewable Share"}
-)
-st.plotly_chart(fig, use_container_width=True)
 
-st.dataframe(summary, use_container_width=True)
+)
+with col1: st.plotly_chart(fig, use_container_width=True)
+
+with col2: st.dataframe(summary, use_container_width=True)
 
 
 
